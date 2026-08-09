@@ -1,16 +1,102 @@
-# React + Vite
+# 🤖 NikAI — AI Assistant
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+NikAI is a full-stack AI assistant built with **React, FastAPI, and Google Gemini**. It provides a simple platform for learning, coding, research, and everyday AI assistance.
 
-Currently, two official plugins are available:
+## 🌐 Live Demo
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+**https://genai-assistant-two.vercel.app/**
 
-## React Compiler
+## ✨ Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+* 🤖 **General AI** — Ask questions and get AI-powered answers.
+* 📚 **Study Mode** — Understand concepts with simple explanations.
+* 💻 **Coding Mode** — Get programming help and code explanations.
+* 🔎 **Research Mode** — Get structured answers and current information.
+* 📝 **Quiz Generator** — Generate quizzes from any topic.
+* 💬 **Chat History** — Access your recent conversations.
+* 📱 **Responsive UI** — Works on desktop and mobile devices.
+* 🔐 **Secure Backend** — Gemini API key is handled by the backend.
 
-## Expanding the ESLint configuration
+## 🛠️ Tech Stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+**Frontend**
+
+* React
+* Vite
+* CSS
+
+**Backend**
+
+* FastAPI
+* Python
+* SQLite
+
+**AI**
+
+* Google Gemini API
+
+**Deployment**
+
+* Vercel — Frontend
+* Render — Backend
+
+## 🏗️ Project Structure
+
+```text
+NikAI/
+├── frontend/
+│   ├── src/
+│   ├── public/
+│   ├── App.jsx
+│   └── App.css
+│
+├── backend/
+│   ├── main.py
+│   ├── chat.db
+│   └── requirements.txt
+│
+└── README.md
+```
+
+## 🚀 How It Works
+
+```text
+User
+  ↓
+NikAI Frontend
+  ↓
+FastAPI Backend
+  ↓
+Google Gemini
+  ↓
+AI Response
+  ↓
+NikAI Interface
+```
+
+## 🔮 Future Scope
+
+* Voice interaction
+* PDF and document analysis
+* Image understanding
+* Personalized AI memory
+* User authentication
+* Learning progress tracking
+* Mobile application
+* Multi-language support
+
+## 🎯 Goal
+
+The goal of **NikAI** is to bring **AI learning, coding, research, and productivity assistance into one simple platform**.
+
+## 👨‍💻 Developer
+
+**Naitik Pandey**
+
+B.Tech — Artificial Intelligence & Machine Learning
+
+GitHub: **[naitikpandey7514-spec](https://github.com/naitikpandey7514-spec)**
+
+## 📄 License
+
+This project is developed for **educational and hackathon purposes**.
