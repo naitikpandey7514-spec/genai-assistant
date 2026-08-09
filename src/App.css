@@ -467,7 +467,31 @@ input {
   border-top: 1px solid #e5e7eb;
 }
 
+.ai-modes {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
 
+.ai-modes button {
+  padding: 8px 14px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  background: white;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.ai-modes button:hover {
+  background: #f1f1f1;
+}
+
+.ai-modes button.active {
+  background: #111827;
+  color: white;
+  border-color: #111827;
+}
 /* =====================================================
    INPUT BOX
 ===================================================== */
@@ -651,4 +675,33 @@ input {
   .welcome p {
     font-size: 13px;
   }
+}
+.input-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  z-index: 100;
+}
+
+.input-box input {
+  flex: 1;
+  position: relative;
+  z-index: 101;
+}
+
+.input-box button {
+  position: relative;
+  z-index: 102;
+  pointer-events: auto;
+  cursor: pointer;
+  min-width: 45px;
+  min-height: 45px;
+  border: none;
+  border-radius: 10px;
+}
+
+.input-box button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
