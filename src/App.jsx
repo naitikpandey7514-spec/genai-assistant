@@ -2,50 +2,28 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 
-
-const API_URL =
-  "https://genai-backend-kjin.onrender.com";
-
+const API_URL = "https://genai-backend-kjin.onrender.com";
 
 function App() {
-
   const [question, setQuestion] = useState("");
-
   const [messages, setMessages] = useState([]);
-
   const [recentChats, setRecentChats] = useState([]);
-
   const [loading, setLoading] = useState(false);
-
-  const [selectedMode, setSelectedMode] =
-    useState("General");
-
+  const [selectedMode, setSelectedMode] = useState("General");
 
   // =====================================================
-  // LOAD HISTORY
+  // LOAD RECENT CHATS
   // =====================================================
 
   const loadHistory = async () => {
-
     try {
-
-      const response = await fetch(
-        `${API_URL}/history`
-      );
-
+      const response = await fetch(`${API_URL}/history`);
 
       if (!response.ok) {
-
-        throw new Error(
-          `History error: ${response.status}`
-        );
-
+        throw new Error(`History error: ${response.status}`);
       }
 
-
-      const data =
-        await response.json();
-
+      const data = await response.json();
 
       setRecentChats(
         Array.isArray(data)
@@ -53,606 +31,383 @@ function App() {
           : []
       );
 
-
-      console.log(
-        "History loaded:",
-        data.length
-      );
-
-
+      console.log("History loaded:", data.length);
     } catch (error) {
-
-      console.error(
-        "History error:",
-        error
-      );
-
+      console.error("History error:", error);
     }
-
   };
 
-
   // =====================================================
-  // LOAD HISTORY ON START
+  // LOAD HISTORY WHEN PAGE OPENS
   // =====================================================
 
   useEffect(() => {
-
     loadHistory();
-
   }, []);
-
 
   // =====================================================
   // ASK AI
   // =====================================================
 
   const askAI = async () => {
+    const currentQuestion = question.trim();
 
-    const currentQuestion =
-      question.trim();
-
-
-    if (
-      !currentQuestion ||
-      loading
-    ) {
-
+    if (!currentQuestion || loading) {
       return;
-
     }
 
+    console.log("QUESTION:", currentQuestion);
+    console.log("MODE:", selectedMode);
 
-    console.log(
-      "QUESTION:",
-      currentQuestion
-    );
-
-
-    console.log(
-      "MODE:",
-      selectedMode
-    );
-
-
-    // Show question
-
-    setMessages(
-      (previous) => [
-
-        ...previous,
-
-        {
-          type: "user",
-          text: currentQuestion
-        }
-
-      ]
-    );
-
+    // Add user message
+    setMessages((previous) => [
+      ...previous,
+      {
+        type: "user",
+        text: currentQuestion,
+      },
+    ]);
 
     // Clear input
-
     setQuestion("");
 
-
-    // Show thinking
-
-    setMessages(
-      (previous) => [
-
-        ...previous,
-
-        {
-          type: "ai",
-          text: "Thinking...",
-          temporary: true
-        }
-
-      ]
-    );
-
+    // Add thinking message
+    setMessages((previous) => [
+      ...previous,
+      {
+        type: "ai",
+        text: "Thinking...",
+        temporary: true,
+      },
+    ]);
 
     setLoading(true);
 
-
     try {
+      const response = await fetch(
+        `${API_URL}/ask`,
+        {
+          method: "POST",
 
-      const response =
-        await fetch(
-          `${API_URL}/ask`,
-          {
+          headers: {
+            "Content-Type": "application/json",
+          },
 
-            method: "POST",
-
-            headers: {
-
-              "Content-Type":
-                "application/json"
-
-            },
-
-            body: JSON.stringify({
-
-              question:
-                currentQuestion,
-
-              mode:
-                selectedMode
-
-            })
-
-          }
-        );
-
+          body: JSON.stringify({
+            question: currentQuestion,
+            mode: selectedMode,
+          }),
+        }
+      );
 
       if (!response.ok) {
-
         throw new Error(
           `Server error: ${response.status}`
         );
-
       }
 
+      const data = await response.json();
 
-      const data =
-        await response.json();
-
-
-      console.log(
-        "AI RESPONSE:",
-        data
-      );
-
+      console.log("AI RESPONSE:", data);
 
       const answer =
         data.answer ||
         "Sorry, I could not generate a response.";
 
+      // Replace thinking message
+      setMessages((previous) => {
+        const updated = [...previous];
 
-      setMessages(
-        (previous) => {
+        const lastIndex =
+          updated.length - 1;
 
-          const updated =
-            [...previous];
-
-
-          const lastIndex =
-            updated.length - 1;
-
-
-          if (
-
-            lastIndex >= 0 &&
-
-            updated[lastIndex].type === "ai" &&
-
-            updated[lastIndex].temporary
-
-          ) {
-
-            updated[lastIndex] = {
-
-              type: "ai",
-
-              text: answer
-
-            };
-
-          }
-
-
-          return updated;
-
+        if (
+          lastIndex >= 0 &&
+          updated[lastIndex].type === "ai" &&
+          updated[lastIndex].temporary
+        ) {
+          updated[lastIndex] = {
+            type: "ai",
+            text: answer,
+          };
         }
-      );
 
+        return updated;
+      });
 
+      // Refresh history
       loadHistory();
 
-
     } catch (error) {
+      console.error("ASK ERROR:", error);
 
-      console.error(
-        "ASK ERROR:",
-        error
-      );
+      setMessages((previous) => {
+        const updated = [...previous];
 
+        const lastIndex =
+          updated.length - 1;
 
-      setMessages(
-        (previous) => {
-
-          const updated =
-            [...previous];
-
-
-          const lastIndex =
-            updated.length - 1;
-
-
-          if (
-
-            lastIndex >= 0 &&
-
-            updated[lastIndex].type === "ai" &&
-
-            updated[lastIndex].temporary
-
-          ) {
-
-            updated[lastIndex] = {
-
-              type: "ai",
-
-              text:
-                `❌ ${error.message}`
-
-            };
-
-          }
-
-
-          return updated;
-
+        if (
+          lastIndex >= 0 &&
+          updated[lastIndex].type === "ai" &&
+          updated[lastIndex].temporary
+        ) {
+          updated[lastIndex] = {
+            type: "ai",
+            text: `❌ ${error.message}`,
+          };
         }
-      );
 
+        return updated;
+      });
 
     } finally {
-
       setLoading(false);
-
     }
-
   };
-
 
   // =====================================================
   // GENERATE QUIZ
   // =====================================================
 
   const generateQuiz = async () => {
+    const topic = question.trim();
 
-    const topic =
-      question.trim();
-
-
-    if (
-      !topic ||
-      loading
-    ) {
-
+    if (!topic || loading) {
       return;
-
     }
 
+    console.log("QUIZ TOPIC:", topic);
 
-    console.log(
-      "QUIZ BUTTON CLICKED"
-    );
+    // Show user request
+    setMessages((previous) => [
+      ...previous,
 
+      {
+        type: "user",
+        text: `📝 Generate quiz: ${topic}`,
+      },
 
-    console.log(
-      "QUIZ TOPIC:",
-      topic
-    );
-
-
-    // Show user message
-
-    setMessages(
-      (previous) => [
-
-        ...previous,
-
-        {
-
-          type: "user",
-
-          text:
-            `📝 Generate quiz: ${topic}`
-
-        },
-
-        {
-
-          type: "ai",
-
-          text:
-            "Creating your quiz...",
-
-          temporary: true
-
-        }
-
-      ]
-    );
-
+      {
+        type: "ai",
+        text: "Creating your quiz...",
+        temporary: true,
+      },
+    ]);
 
     setQuestion("");
-
     setLoading(true);
 
-
     try {
+      const response = await fetch(
+        `${API_URL}/quiz`,
+        {
+          method: "POST",
 
-      const response =
-        await fetch(
-          `${API_URL}/quiz`,
-          {
+          headers: {
+            "Content-Type": "application/json",
+          },
 
-            method: "POST",
-
-            headers: {
-
-              "Content-Type":
-                "application/json"
-
-            },
-
-            body: JSON.stringify({
-
-              question: topic
-
-            })
-
-          }
-        );
-
+          body: JSON.stringify({
+            question: topic,
+          }),
+        }
+      );
 
       console.log(
         "QUIZ STATUS:",
         response.status
       );
 
-
       if (!response.ok) {
-
         throw new Error(
           `Server error: ${response.status}`
         );
-
       }
 
+      const data = await response.json();
 
-      const data =
-        await response.json();
-
-
-      console.log(
-        "QUIZ RESPONSE:",
-        data
-      );
-
+      console.log("QUIZ RESPONSE:", data);
 
       const answer =
         data.answer ||
         "Sorry, I could not generate the quiz.";
 
+      // Replace thinking message
+      setMessages((previous) => {
+        const updated = [...previous];
 
-      setMessages(
-        (previous) => {
+        const lastIndex =
+          updated.length - 1;
 
-          const updated =
-            [...previous];
-
-
-          const lastIndex =
-            updated.length - 1;
-
-
-          if (
-
-            lastIndex >= 0 &&
-
-            updated[lastIndex].type === "ai" &&
-
-            updated[lastIndex].temporary
-
-          ) {
-
-            updated[lastIndex] = {
-
-              type: "ai",
-
-              text: answer
-
-            };
-
-          }
-
-
-          return updated;
-
+        if (
+          lastIndex >= 0 &&
+          updated[lastIndex].type === "ai" &&
+          updated[lastIndex].temporary
+        ) {
+          updated[lastIndex] = {
+            type: "ai",
+            text: answer,
+          };
         }
-      );
 
+        return updated;
+      });
 
     } catch (error) {
+      console.error("QUIZ ERROR:", error);
 
-      console.error(
-        "QUIZ ERROR:",
-        error
-      );
+      setMessages((previous) => {
+        const updated = [...previous];
 
+        const lastIndex =
+          updated.length - 1;
 
-      setMessages(
-        (previous) => {
-
-          const updated =
-            [...previous];
-
-
-          const lastIndex =
-            updated.length - 1;
-
-
-          if (
-
-            lastIndex >= 0 &&
-
-            updated[lastIndex].type === "ai" &&
-
-            updated[lastIndex].temporary
-
-          ) {
-
-            updated[lastIndex] = {
-
-              type: "ai",
-
-              text:
-                `❌ ${error.message}`
-
-            };
-
-          }
-
-
-          return updated;
-
+        if (
+          lastIndex >= 0 &&
+          updated[lastIndex].type === "ai" &&
+          updated[lastIndex].temporary
+        ) {
+          updated[lastIndex] = {
+            type: "ai",
+            text: `❌ ${error.message}`,
+          };
         }
-      );
 
+        return updated;
+      });
 
     } finally {
-
       setLoading(false);
-
     }
-
   };
-
 
   // =====================================================
   // ENTER KEY
   // =====================================================
 
-  const handleKeyDown =
-    (event) => {
-
-      if (
-        event.key === "Enter" &&
-        !event.shiftKey
-      ) {
-
-        event.preventDefault();
-
-        askAI();
-
-      }
-
-    };
-
+  const handleKeyDown = (event) => {
+    if (
+      event.key === "Enter" &&
+      !event.shiftKey
+    ) {
+      event.preventDefault();
+      askAI();
+    }
+  };
 
   // =====================================================
   // NEW CHAT
   // =====================================================
 
   const newChat = () => {
-
     setMessages([]);
-
     setQuestion("");
-
+    setSelectedMode("General");
   };
 
+  // =====================================================
+  // OPEN RECENT CHAT
+  // =====================================================
+
+  const openRecentChat = (chat) => {
+    setMessages([
+      {
+        type: "user",
+        text: chat.question,
+      },
+
+      {
+        type: "ai",
+        text: chat.answer,
+      },
+    ]);
+  };
 
   // =====================================================
-  // OPEN HISTORY
+  // FEATURE CARD - GENERAL
   // =====================================================
 
-  const openRecentChat =
-    (chat) => {
+  const selectGeneral = () => {
+    setSelectedMode("General");
+  };
 
-      setMessages([
+  // =====================================================
+  // FEATURE CARD - STUDY
+  // =====================================================
 
-        {
+  const selectStudy = () => {
+    setSelectedMode("Study");
+  };
 
-          type: "user",
+  // =====================================================
+  // FEATURE CARD - CODING
+  // =====================================================
 
-          text:
-            chat.question
+  const selectCoding = () => {
+    setSelectedMode("Coding");
+  };
 
-        },
+  // =====================================================
+  // FEATURE CARD - QUIZ
+  // =====================================================
 
-        {
-
-          type: "ai",
-
-          text:
-            chat.answer
-
-        }
-
-      ]);
-
-    };
-
+  const selectQuiz = () => {
+    setQuestion("Java loops");
+  };
 
   // =====================================================
   // UI
   // =====================================================
 
   return (
-
     <div className="app">
 
-
-      {/* SIDEBAR */}
+      {/* =================================================
+          SIDEBAR
+          ================================================= */}
 
       <aside className="sidebar">
 
+        {/* LOGO */}
 
         <div className="logo">
-
-          🤖
-
-          <span>
-            NikAi
-          </span>
-
+          🤖 <span>NikAI</span>
         </div>
 
+
+        {/* NEW CHAT */}
 
         <button
           type="button"
           className="new-chat"
           onClick={newChat}
         >
-
           + New Chat
-
         </button>
 
+
+        {/* RECENT CHATS */}
 
         <div className="recent-section">
 
           <div className="recent-title">
-
             Recent Chats
-
           </div>
 
 
           <div className="history-list">
 
-
             {recentChats.length === 0 && (
-
               <p className="no-history">
-
                 No recent chats
-
               </p>
-
             )}
 
 
             {recentChats
               .slice(0, 10)
               .map((chat) => (
-
                 <button
                   type="button"
                   className="history-item"
@@ -661,30 +416,27 @@ function App() {
                     openRecentChat(chat)
                   }
                 >
-
                   {chat.question}
-
                 </button>
-
               ))}
-
 
           </div>
 
         </div>
 
 
+        {/* SIDEBAR BOTTOM */}
+
         <div className="sidebar-bottom">
-
           Powered by Gemini
-
         </div>
-
 
       </aside>
 
 
-      {/* MAIN */}
+      {/* =================================================
+          MAIN
+          ================================================= */}
 
       <section className="main">
 
@@ -696,14 +448,12 @@ function App() {
           <div>
 
             <h1>
-              NikAi
+              NikAI Assistant
             </h1>
 
             <p>
-
-              Ask anything and get
-              an AI-powered response.
-
+              Ask anything and get an
+              AI-powered response.
             </p>
 
           </div>
@@ -711,35 +461,157 @@ function App() {
         </header>
 
 
-        {/* CHAT */}
+        {/* =================================================
+            CHAT AREA
+            ================================================= */}
 
         <main className="chat-box">
 
+
+          {/* =================================================
+              WELCOME SCREEN
+              ================================================= */}
 
           {messages.length === 0 && (
 
             <div className="welcome">
 
-              <div className="robot">
+              {/* ROBOT */}
+
+              <div className="welcome-icon">
                 🤖
               </div>
 
+
+              {/* TITLE */}
+
               <h2>
-                How can I help you?
+                Welcome to <span>NikAI</span>
               </h2>
 
-              <p>
 
-                Ask me anything about
-                programming, AI,
-                technology and education.
+              {/* DESCRIPTION */}
 
+              <p className="welcome-subtitle">
+                Your intelligent AI assistant
+                for learning, coding,
+                research and more.
               </p>
+
+
+              {/* =================================================
+                  FEATURE CARDS
+                  ================================================= */}
+
+              <div className="feature-grid">
+
+
+                {/* GENERAL AI */}
+
+                <button
+                  type="button"
+                  onClick={selectGeneral}
+                  className="feature-card"
+                >
+
+                  <div className="feature-icon">
+                    🤖
+                  </div>
+
+                  <strong>
+                    General AI
+                  </strong>
+
+                  <span>
+                    Ask anything and get
+                    helpful answers.
+                  </span>
+
+                </button>
+
+
+                {/* STUDY */}
+
+                <button
+                  type="button"
+                  onClick={selectStudy}
+                  className="feature-card"
+                >
+
+                  <div className="feature-icon">
+                    📚
+                  </div>
+
+                  <strong>
+                    Study Assistant
+                  </strong>
+
+                  <span>
+                    Learn concepts with
+                    simple explanations.
+                  </span>
+
+                </button>
+
+
+                {/* CODING */}
+
+                <button
+                  type="button"
+                  onClick={selectCoding}
+                  className="feature-card"
+                >
+
+                  <div className="feature-icon">
+                    💻
+                  </div>
+
+                  <strong>
+                    Coding Helper
+                  </strong>
+
+                  <span>
+                    Understand code and
+                    solve programming problems.
+                  </span>
+
+                </button>
+
+
+                {/* QUIZ */}
+
+                <button
+                  type="button"
+                  onClick={selectQuiz}
+                  className="feature-card"
+                >
+
+                  <div className="feature-icon">
+                    📝
+                  </div>
+
+                  <strong>
+                    Quiz Generator
+                  </strong>
+
+                  <span>
+                    Generate a quiz from
+                    any topic.
+                  </span>
+
+                </button>
+
+
+              </div>
 
             </div>
 
           )}
 
+
+          {/* =================================================
+              MESSAGES
+              ================================================= */}
 
           {messages.map(
             (message, index) => (
@@ -771,14 +643,17 @@ function App() {
             )
           )}
 
-
         </main>
 
 
-        {/* AI MODES */}
+        {/* =================================================
+            AI MODES
+            ================================================= */}
 
         <div className="ai-modes">
 
+
+          {/* GENERAL */}
 
           <button
             type="button"
@@ -791,11 +666,11 @@ function App() {
                 : ""
             }
           >
-
             🤖 General
-
           </button>
 
+
+          {/* STUDY */}
 
           <button
             type="button"
@@ -808,11 +683,11 @@ function App() {
                 : ""
             }
           >
-
             📚 Study
-
           </button>
 
+
+          {/* CODING */}
 
           <button
             type="button"
@@ -825,11 +700,11 @@ function App() {
                 : ""
             }
           >
-
             💻 Coding
-
           </button>
 
+
+          {/* RESEARCH */}
 
           <button
             type="button"
@@ -842,19 +717,20 @@ function App() {
                 : ""
             }
           >
-
             🔎 Research
-
           </button>
-
 
         </div>
 
 
-        {/* INPUT */}
+        {/* =================================================
+            INPUT AREA
+            ================================================= */}
 
         <div className="input-box">
 
+
+          {/* TEXT INPUT */}
 
           <input
             type="text"
@@ -865,7 +741,7 @@ function App() {
               )
             }
             onKeyDown={handleKeyDown}
-            placeholder="Message GenAI..."
+            placeholder="Message NikAI..."
             autoComplete="off"
             disabled={loading}
           />
@@ -880,11 +756,9 @@ function App() {
               loading ||
               !question.trim()
             }
-            title="Ask AI"
+            title="Ask NikAI"
           >
-
             ➤
-
           </button>
 
 
@@ -899,30 +773,24 @@ function App() {
             }
             title="Generate Quiz"
           >
-
             📝
-
           </button>
-
 
         </div>
 
 
+        {/* DISCLAIMER */}
+
         <p className="disclaimer">
-
-          GenAI can make mistakes.
+          NikAI can make mistakes.
           Check important information.
-
         </p>
 
 
       </section>
 
     </div>
-
   );
-
 }
-
 
 export default App;
