@@ -78,7 +78,7 @@ function App() {
     setLoading(true);
 
     try {
-      const response = await fetch(`${API_URL}/ask`, {
+      const response = await fetch("https://genai-backend-kjin.onrender.com/ask", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
