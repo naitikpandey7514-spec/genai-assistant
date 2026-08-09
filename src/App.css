@@ -735,45 +735,51 @@ body {
 /* =====================================================
    MOBILE
    ===================================================== */
+/* =====================================================
+   MOBILE PHONE FIX
+   ===================================================== */
 
 @media (max-width: 600px) {
 
   html,
   body,
   #root {
+    width: 100%;
+    height: 100%;
     overflow: hidden;
   }
 
   .app {
-    display: block;
+    width: 100%;
+    height: 100dvh;
 
-    height: 100vh;
+    display: flex;
+    flex-direction: column;
+
+    overflow: hidden;
   }
+
+  /* ==============================
+     TOP LOGO
+     ============================== */
 
   .sidebar {
     width: 100%;
+    height: 52px;
+    min-height: 52px;
 
-    height: 55px;
-
-    min-height: 55px;
-
-    padding: 8px 15px;
+    padding: 7px 14px;
 
     display: flex;
-
     flex-direction: row;
-
     align-items: center;
 
     border-right: none;
-
-    border-bottom:
-      1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
   }
 
   .logo {
     height: auto;
-
     padding: 0;
 
     font-size: 19px;
@@ -785,14 +791,34 @@ body {
     display: none;
   }
 
+  /* ==============================
+     MAIN
+     ============================== */
+
   .main {
-    height: calc(100vh - 55px);
+    width: 100%;
+    height: calc(100dvh - 52px);
+
+    min-height: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    overflow: hidden;
   }
 
+  /* ==============================
+     HEADER
+     ============================== */
+
   .header {
-    height: 55px;
+    width: 100%;
+    height: 54px;
+    min-height: 54px;
 
     padding: 10px 15px;
+
+    flex-shrink: 0;
   }
 
   .header h1 {
@@ -803,94 +829,258 @@ body {
     display: none;
   }
 
+  /* ==============================
+     CHAT
+     ============================== */
+
   .chat-box {
-    padding: 12px 10px;
+    width: 100%;
+
+    flex: 1;
+    min-height: 0;
+
+    padding: 10px 10px;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ==============================
+     WELCOME
+     ============================== */
+
+  .welcome {
+    width: 100%;
+
+    margin: auto;
+
+    padding: 5px;
   }
 
   .welcome-icon {
     width: 55px;
     height: 55px;
 
-    font-size: 28px;
+    margin-bottom: 8px;
 
-    margin-bottom: 9px;
+    font-size: 27px;
   }
 
   .welcome h2 {
-    font-size: 25px;
+    font-size: 24px;
+
+    line-height: 1.2;
   }
 
   .welcome-subtitle {
-    margin: 6px auto 15px;
+    margin: 6px auto 14px;
+
+    max-width: 320px;
 
     font-size: 10px;
   }
 
+  /* ==============================
+     FEATURE CARDS
+     ============================== */
+
   .feature-grid {
+    width: 100%;
+
+    display: grid;
+
     grid-template-columns: repeat(2, 1fr);
 
     gap: 7px;
   }
 
   .feature-card {
-    min-height: 105px;
+    width: 100%;
 
-    padding: 11px 8px;
+    min-height: 92px;
+
+    padding: 10px 7px;
+
+    border-radius: 13px;
   }
 
   .feature-icon {
-    width: 31px;
-    height: 31px;
+    width: 29px;
+    height: 29px;
 
-    font-size: 15px;
-
-    margin-bottom: 6px;
-  }
-
-  .feature-card strong {
-    font-size: 10px;
-  }
-
-  .feature-card span {
-    font-size: 8px;
-  }
-
-  .ai-modes {
-    height: 36px;
-
-    gap: 4px;
-  }
-
-  .ai-modes button {
-    height: 26px;
-
-    padding: 0 8px;
-
-    font-size: 8px;
-  }
-
-  .input-box {
-    width: 94%;
-
-    height: 47px;
-  }
-
-  .input-box input {
-    height: 37px;
-
-    font-size: 11px;
-  }
-
-  .input-box button {
-    width: 35px;
-    height: 35px;
+    margin-bottom: 5px;
 
     font-size: 14px;
   }
 
+  .feature-card strong {
+    font-size: 9px;
+
+    margin-bottom: 3px;
+  }
+
+  .feature-card span {
+    font-size: 7px;
+
+    line-height: 1.3;
+  }
+
+  /* ==============================
+     MESSAGES
+     ============================== */
+
+  .message {
+    max-width: 90%;
+
+    padding: 11px 13px;
+
+    font-size: 12px;
+  }
+
+  .message p {
+    font-size: 12px;
+
+    line-height: 1.5;
+  }
+
+  /* ==============================
+     MODE BUTTONS
+     ============================== */
+
+  .ai-modes {
+    width: 100%;
+
+    height: 39px;
+    min-height: 39px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 4px;
+
+    padding: 4px 6px;
+
+    overflow: visible;
+  }
+
+  .ai-modes button {
+    flex: 1;
+
+    min-width: 0;
+
+    height: 28px;
+
+    padding: 0 4px;
+
+    border-radius: 20px;
+
+    font-size: 8px;
+
+    white-space: nowrap;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ==============================
+     MESSAGE NIKAI BOX
+     ============================== */
+
+  .input-box {
+    width: 94%;
+
+    height: 48px;
+    min-height: 48px;
+
+    flex-shrink: 0;
+
+    margin: 3px auto 3px;
+
+    padding: 4px;
+
+    display: flex;
+    align-items: center;
+
+    border-radius: 15px;
+
+    background: rgba(13,17,29,0.98);
+
+    border: 1px solid rgba(255,255,255,0.12);
+
+    position: relative;
+
+    z-index: 20;
+  }
+
+  .input-box input {
+    width: 100%;
+
+    min-width: 0;
+
+    height: 38px;
+
+    padding: 0 11px;
+
+    font-size: 11px;
+
+    display: block;
+
+    opacity: 1;
+
+    visibility: visible;
+  }
+
+  .input-box input::placeholder {
+    color: #777f92;
+
+    opacity: 1;
+  }
+
+  .input-box button {
+    width: 36px;
+    height: 36px;
+
+    min-width: 36px;
+
+    flex-shrink: 0;
+
+    margin-left: 3px;
+
+    border-radius: 10px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    font-size: 14px;
+  }
+
+  /* ==============================
+     DISCLAIMER
+     ============================== */
+
   .disclaimer {
-    height: 19px;
+    width: 100%;
+
+    height: 18px;
+    min-height: 18px;
+
+    flex-shrink: 0;
+
+    padding: 2px 5px;
 
     font-size: 7px;
+
+    text-align: center;
   }
 }
