@@ -37,7 +37,15 @@ if API_KEY:
 
 app = FastAPI()
 
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "https://genai-assistant-two.vercel.app",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 # =====================================================
 # CORS
 # =====================================================
