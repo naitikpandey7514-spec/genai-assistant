@@ -609,7 +609,7 @@ function App() {
           🤖
 
           <span>
-            GenAI
+            NikAi
           </span>
 
         </div>
@@ -696,7 +696,7 @@ function App() {
           <div>
 
             <h1>
-              GenAI Assistant
+              NikAi
             </h1>
 
             <p>
