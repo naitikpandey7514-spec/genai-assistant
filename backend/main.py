@@ -1,4 +1,3 @@
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -37,15 +36,7 @@ if API_KEY:
 
 app = FastAPI()
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
-        "https://genai-assistant-two.vercel.app",
-    ],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+
 # =====================================================
 # CORS
 # =====================================================
@@ -53,6 +44,7 @@ app.add_middleware(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
+        "https://genai-assistant-two.vercel.app",
         "http://127.0.0.1:5173",
         "http://localhost:5173",
         "http://127.0.0.1:5174",
@@ -60,7 +52,7 @@ app.add_middleware(
         "http://127.0.0.1:5500",
         "http://localhost:5500",
     ],
-    allow_credentials=False,
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -74,7 +66,6 @@ DB_NAME = "chat.db"
 
 
 def create_database():
-
     connection = sqlite3.connect(DB_NAME)
 
     cursor = connection.cursor()
@@ -110,7 +101,6 @@ class Question(BaseModel):
 
 @app.get("/")
 def home():
-
     return {
         "message": "GenAI Backend is running!"
     }
@@ -126,24 +116,20 @@ def ask_gemini(data: Question):
     current_question = data.question.strip()
 
     if not current_question:
-
         return {
             "question": "",
             "answer": "Please enter a question."
         }
-
 
     # =================================================
     # CHECK API KEY
     # =================================================
 
     if client is None:
-
         return {
             "question": current_question,
-            "answer": "❌ GEMINI_API_KEY is missing in the .env file."
+            "answer": "❌ GEMINI_API_KEY is missing."
         }
-
 
     # =================================================
     # CURRENT / REAL WORLD KEYWORDS
@@ -173,15 +159,12 @@ def ask_gemini(data: Question):
         "time"
     ]
 
-
     question_lower = current_question.lower()
-
 
     needs_search = any(
         keyword in question_lower
         for keyword in search_keywords
     )
-
 
     # =================================================
     # PROMPT
@@ -208,7 +191,6 @@ Current user question:
 
 Answer:
 """
-
 
     # =================================================
     # CALL GEMINI
@@ -237,7 +219,6 @@ Answer:
                 contents=prompt
             )
 
-
         # =================================================
         # GET ANSWER
         # =================================================
@@ -245,9 +226,7 @@ Answer:
         answer = response.text
 
         if not answer:
-
             answer = "Sorry, I could not generate a response."
-
 
         # =================================================
         # SAVE CHAT
@@ -271,7 +250,6 @@ Answer:
         connection.commit()
         connection.close()
 
-
         # =================================================
         # RETURN TO FRONTEND
         # =================================================
@@ -280,7 +258,6 @@ Answer:
             "question": current_question,
             "answer": answer
         }
-
 
     except Exception as error:
 
@@ -316,9 +293,7 @@ def get_history():
 
     connection.close()
 
-
     history = []
-
 
     for chat in chats:
 
@@ -329,7 +304,6 @@ def get_history():
                 "answer": chat[2]
             }
         )
-
 
     return history
 
@@ -349,7 +323,6 @@ def clear_history():
 
     connection.commit()
     connection.close()
-
 
     return {
         "message": "All chats deleted"
