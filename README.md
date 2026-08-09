@@ -1,4 +1,4 @@
-# 🤖 NikAI — AI Assistant
+# 🤖 NikAI —  Assistant
 
 NikAI is a full-stack AI assistant built with **React, FastAPI, and Google Gemini**. It provides a simple platform for learning, coding, research, and everyday AI assistance.
 
